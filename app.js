@@ -69,7 +69,13 @@ app.get('/', (req, res) => {
         let data1 = JSON.parse(data);
         let html = `
     <h1 style="text-align:center">UFC News scraped from <a href="https://www.mmanews.com/">MMANews.com</a></h1>
-        <ul style="list-style: none; margin">`;
+       
+    <br><br>
+    <h3 style="text-align:center">click <a href="/scrape">here</a> to scrape the data again</h3>
+    <br>
+    <ul style="list-style: none; margin">`;
+
+
         
         
         //write the loop again but this time to show the data in a table
