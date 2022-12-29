@@ -42,24 +42,52 @@ app.get('/scrape', (req, res) => {
       // Send the data back to the client
       res.send(data);
       console.log(data);
+      //store data in json file. if the data is duplicated, it will be overwritten
+        const fs = require('fs');
+        fs.writeFile('data.json', JSON.stringify(data), (err) => {
+            if (err) throw err;
+            console.log('Data written to file');
+        });
+
     }
 
   });
 });
 
 //create endpoint showdata to show the data in a nice html list
-app.get('/showdata', (req, res) => {
+app.get('/', (req, res) => {
+    const fs = require('fs');
 
-    let html = `<h1>Data scraped from mmanews.com</h1>
-    
-    <ul>`;
+    //is data.json does not exist, show html error message
+    if (!fs.existsSync('data.json')) {
+        res.send('data.json does not exist. Please run /scrape first');
+    } else{
 
-    //loop through the data array including the image in an image tag
-    for (let i = 0; i < data.length; i++) {
-        html += '<li><img src="' + data[i].image + '" alt="">' + data[i].headline + ' - ' + data[i].newsDate + ' - ' + data[i].author + '</li>';
-    }
-    html += '</ul>';
-    res.send(html);
+    //read the data from the json file present data nicely and image in image tag
+    fs.readFile('data.json', (err, data) => {
+        if (err) throw err;
+        let data1 = JSON.parse(data);
+        let html = `
+    <h1 style="text-align:center">UFC News scraped from <a href="https://www.mmanews.com/">MMANews.com</a></h1>
+        <ul style="list-style: none; margin">`;
+        
+        
+        //write the loop again but this time to show the data in a table
+        for (let i = 0; i < data1.length; i++) {
+            html += `
+            <li>
+                <h2>${data1[i].headline}</h2>
+                <p>${data1[i].newsDate}</p>
+                <p>${data1[i].author}</p>
+                <img src="${data1[i].image}" alt="image">
+            </li>
+            `;
+        }
+        html += '</ul>';
+        res.send(html);
+    }); 
+
+}
 });
 
 app.listen(3000, () => {
